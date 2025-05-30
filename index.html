@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技风软件导航 - 网址弹窗版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e0f7fa;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 114, 255, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .software-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .software-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 195, 255, 0.15);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 82, 217, 0.1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .software-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(0, 195, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 119, 255, 0.25);
+        }
+        
+        .software-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00c6ff;
+            text-align: center;
+        }
+        
+        .software-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+            color: #ffffff;
+        }
+        
+        .software-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.85;
+            text-align: center;
+        }
+        
+        /* 弹出窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1a2a3a, #0d1b26);
+            border: 1px solid rgba(0, 195, 255, 0.3);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 10px 50px rgba(0, 119, 255, 0.3);
+            position: relative;
+            animation: modalAppear 0.4s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .close:hover {
+            color: #fff;
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #00c6ff;
+            text-align: center;
+        }
+        
+        .url-display {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 195, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            word-break: break-all;
+            color: #4fc3f7;
+            text-align: center;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .visit-btn {
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            color: white;
+        }
+        
+        .visit-btn:hover {
+            background: linear-gradient(90deg, #00b4e6, #0066cc);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0f7fa;
+            border: 1px solid rgba(0, 195, 255, 0.3);
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .copied-message {
+            color: #4caf50;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 70px;
+            padding: 25px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .software-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>开发者工具集</h1>
+            <p class="subtitle">精选高效开发工具，点击卡片查看网址</p>
+        </header>
+        
+        <div class="software-grid">
+            <!-- 软件卡片 - 点击弹出网址窗口 -->
+            <div class="software-card" data-name="VS Code" data-url="https://code.visualstudio.com/">
+                <div class="software-icon">💻</div>
+                <h3 class="software-name">VS Code</h3>
+                <p class="software-desc">微软开发的轻量级代码编辑器，支持多种编程语言和扩展</p>
+            </div>
+            
+            <div class="software-card" data-name="GitHub" data-url="https://github.com/">
+                <div class="software-icon">📂</div>
+                <h3 class="software-name">GitHub</h3>
+                <p class="software-desc">全球最大的代码托管平台，支持版本控制和协作开发</p>
+            </div>
+            
+            <div class="software-card" data-name="Docker" data-url="https://www.docker.com/">
+                <div class="software-icon">🐳</div>
+                <h3 class="software-name">Docker</h3>
+                <p class="software-desc">容器化平台，简化应用程序的部署和管理</p>
+            </div>
+            
+            <div class="software-card" data-name="Postman" data-url="https://www.postman.com/">
+                <div class="software-icon">📡</div>
+                <h3 class="software-name">Postman</h3>
+                <p class="software-desc">API开发协作平台，支持测试和文档生成</p>
+            </div>
+            
+            <div class="software-card" data-name="Figma" data-url="https://figma.com/">
+                <div class="software-icon">🎨</div>
+                <h3 class="software-name">Figma</h3>
+                <p class="software-desc">云端UI设计工具，支持实时协作和原型设计</p>
+            </div>
+            
+            <div class="software-card" data-name="IntelliJ IDEA" data-url="https://www.jetbrains.com/idea/">
+                <div class="software-icon">🚀</div>
+                <h3 class="software-name">IntelliJ IDEA</h3>
+                <p class="software-desc">强大的Java集成开发环境，支持多种框架和工具</p>
+            </div>
+        </div>
+        
+        <!-- 网址弹出窗口 -->
+        <div id="urlModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 class="modal-title" id="modalTitle">VS Code</h2>
+                <div class="url-display" id="urlDisplay">https://code.visualstudio.com/</div>
+                <div class="action-buttons">
+                    <button class="modal-btn visit-btn" id="visitBtn">访问网站</button>
+                    <button class="modal-btn copy-btn" id="copyBtn">复制链接</button>
+                </div>
+                <div class="copied-message" id="copiedMessage">链接已复制到剪贴板！</div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 科技简约风软件导航 | 点击卡片查看网址</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取模态框元素
+        const modal = document.getElementById("urlModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const urlDisplay = document.getElementById("urlDisplay");
+        const visitBtn = document.getElementById("visitBtn");
+        const copyBtn = document.getElementById("copyBtn");
+        const copiedMessage = document.getElementById("copiedMessage");
+        const closeBtn = document.querySelector(".close");
+        
+        // 存储当前选中的网址
+        let currentUrl = "";
+        
+        // 为每个软件卡片添加点击事件
+        document.querySelectorAll('.software-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const softwareName = this.getAttribute('data-name');
+                currentUrl = this.getAttribute('data-url');
+                
+                // 更新模态框内容
+                modalTitle.textContent = softwareName;
+                urlDisplay.textContent = currentUrl;
+                
+                // 显示模态框
+                modal.style.display = "flex";
+            });
+        });
+        
+        // 访问按钮点击事件
+        visitBtn.addEventListener('click', function() {
+            // 在新标签页中打开网址
+            window.open(currentUrl, '_blank');
+        });
+        
+        // 复制按钮点击事件
+        copyBtn.addEventListener('click', function() {
+            // 复制网址到剪贴板
+            navigator.clipboard.writeText(currentUrl).then(() => {
+                // 显示复制成功消息
+                copiedMessage.style.opacity = "1";
+                
+                // 2秒后隐藏消息
+                setTimeout(() => {
+                    copiedMessage.style.opacity = "0";
+                }, 2000);
+            });
+        });
+        
+        // 关闭按钮点击事件
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = "none";
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+        
+        // 按ESC键关闭模态框
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && modal.style.display === "flex") {
+                modal.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
